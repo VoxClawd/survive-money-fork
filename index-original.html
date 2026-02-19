@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/tomat.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>SURVIVE</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 2.5rem 1.5rem 1.5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+  }
+  .logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+  }
+  .logo:hover { transform: scale(1.08); }
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #fff;
+  }
+  .tagline {
+    color: #555;
+    font-size: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* CTA */
+  .cta-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.2rem;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 6px;
+    color: #ccc;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .cta:hover { background: #1a1a1a; border-color: #444; color: #fff; transform: translateY(-1px); }
+  .cta .hl { color: #4ade80; }
+
+  /* Tier badge */
+  .tier {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+  .tier-normal { background: #0d3320; color: #4ade80; border: 1px solid #166534; }
+  .tier-low_compute { background: #3b2f0a; color: #facc15; border: 1px solid #854d0e; }
+  .tier-critical { background: #3b0a0a; color: #f87171; border: 1px solid #991b1b; }
+  .tier-dead { background: #1a1a1a; color: #666; border: 1px solid #333; }
+
+  /* Status line */
+  .status-line {
+    font-size: 0.85rem;
+    color: #999;
+    padding: 0.8rem 1rem;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  /* Metric grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .metric {
+    background: #111;
+    border: 1px solid #1a1a1a;
+    padding: 0.8rem;
+    border-radius: 6px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .metric:hover { border-color: #333; background: #131313; }
+  .metric-label {
+    font-size: 0.6rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+  }
+  .metric-value {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .metric-unit {
+    font-size: 0.65rem;
+    color: #555;
+    margin-left: 0.15rem;
+    font-weight: 400;
+  }
+  .metric-sub {
+    font-size: 0.6rem;
+    color: #444;
+    margin-top: 0.15rem;
+  }
+
+  /* Cards (earnings, buyback) */
+  .card {
+    background: #0d1117;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  .card:hover { border-color: #2a2a2a; }
+  .card-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.7rem;
+  }
+  .card-title-green { color: #4ade80; }
+  .card-title-blue { color: #60a5fa; }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.7rem;
+  }
+  .card-stat-label {
+    font-size: 0.55rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.1rem;
+  }
+  .card-stat-value {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .card-stat-value-green { color: #4ade80; }
+  .card-stat-value-blue { color: #60a5fa; }
+  .card-stat-value-white { color: #fff; }
+  .card-stat-unit {
+    font-size: 0.6rem;
+    color: #444;
+    margin-left: 0.1rem;
+    font-weight: 400;
+  }
+  .card-note {
+    font-size: 0.6rem;
+    color: #333;
+    margin-top: 0.7rem;
+  }
+
+  /* Chart */
+  .chart-container {
+    background: #111;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 0.8rem 0.8rem 0.4rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  .chart-container:hover { border-color: #2a2a2a; }
+  .chart-title {
+    font-size: 0.65rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+  }
+  .chart-canvas {
+    width: 100%;
+    height: 160px;
+    display: block;
+  }
+
+  /* Agent addresses */
+  .agent-info {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .address {
+    font-size: 0.65rem;
+    color: #444;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+  a { color: #666; text-decoration: none; transition: color 0.15s ease; }
+  a:hover { color: #fff; }
+
+  /* Section title */
+  .section-title {
+    font-size: 0.65rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  /* Report log */
+  .report-list { margin-bottom: 1.5rem; }
+  .report-item {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid #111;
+    font-size: 0.7rem;
+    color: #666;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .report-item:hover { background: #0d0d0d; color: #999; }
+  .report-day { color: #aaa; font-weight: 600; margin-right: 0.4rem; }
+  .report-tweeted { color: #1d9bf0; font-size: 0.6rem; margin-left: 0.3rem; }
+  .log-nav { display: flex; align-items: center; gap: 0.5rem; }
+  .log-btn {
+    cursor: pointer; color: #666; font-size: 0.7rem; padding: 0.15rem 0.4rem;
+    border: 1px solid #222; border-radius: 3px; user-select: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .log-btn:hover { color: #fff; border-color: #444; }
+  .log-btn.disabled { color: #333; border-color: #1a1a1a; pointer-events: none; }
+  .log-page { font-size: 0.6rem; color: #444; }
+
+  /* Footer */
+  .footer {
+    margin-top: 2rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid #111;
+    font-size: 0.6rem;
+    color: #333;
+  }
+
+  /* Sticky countdown banner */
+  .status-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #0a0a0a;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 0.35rem 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.6rem;
+    color: #444;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .countdown-item { display: flex; align-items: center; gap: 0.3rem; }
+  .countdown-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #333;
+    animation: blink 3s ease-in-out infinite;
+  }
+  .countdown-dot-active { background: #4ade80; }
+  @keyframes blink { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  /* Donut chart */
+  .donut-container {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    background: #111;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  .donut-container:hover { border-color: #2a2a2a; }
+  .donut-canvas { width: 100px; height: 100px; flex-shrink: 0; }
+  .donut-legend { font-size: 0.6rem; color: #888; line-height: 1.8; }
+  .donut-swatch {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    margin-right: 0.3rem;
+    vertical-align: middle;
+  }
+
+  /* Milestones timeline */
+  .timeline { margin-bottom: 1.5rem; }
+  .timeline-item {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    font-size: 0.6rem;
+    color: #666;
+    border-left: 2px solid #1a1a1a;
+    padding-left: 0.8rem;
+    margin-left: 0.3rem;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .timeline-item:hover { border-color: #4ade80; color: #999; }
+  .timeline-time { color: #444; white-space: nowrap; }
+  .timeline-action { color: #4ade80; font-weight: 600; }
+
+  /* Expandable sections */
+  .expand-toggle {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .expand-toggle:hover .section-title { color: #888; }
+  .expand-arrow {
+    font-size: 0.5rem;
+    color: #555;
+    transition: transform 0.2s ease;
+  }
+  .expand-arrow.open { transform: rotate(90deg); }
+  .expand-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .expand-content.open { max-height: 2000px; }
+  .prose {
+    font-size: 0.65rem;
+    color: #666;
+    line-height: 1.7;
+    padding: 0.6rem 0;
+    white-space: pre-wrap;
+  }
+  .prose h1, .prose h2, .prose h3 { color: #999; font-size: 0.7rem; margin: 0.6rem 0 0.3rem; }
+
+  /* Death Clock */
+  .death-clock {
+    text-align: center;
+    padding: 1.2rem 1rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(180deg, #0d0a0a 0%, #0a0a0a 100%);
+    border: 1px solid #1a1111;
+    border-radius: 6px;
+  }
+  .death-clock:hover { border-color: #2a1515; }
+  .death-label {
+    font-size: 0.55rem;
+    color: #553333;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin-bottom: 0.5rem;
+  }
+  .death-timer {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #f87171;
+    letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .death-date {
+    font-size: 0.6rem;
+    color: #444;
+    margin-top: 0.3rem;
+  }
+  @media (max-width: 600px) {
+    .death-timer { font-size: 1.3rem; }
+    .death-clock { padding: 0.8rem 0.6rem; }
+  }
+
+  /* Animations */
+  .loading { color: #333; }
+  .pulse { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+  .fade-in-d1 { animation-delay: 0.05s; opacity: 0; }
+  .fade-in-d2 { animation-delay: 0.1s; opacity: 0; }
+  .fade-in-d3 { animation-delay: 0.15s; opacity: 0; }
+  .fade-in-d4 { animation-delay: 0.2s; opacity: 0; }
+  .fade-in-d5 { animation-delay: 0.25s; opacity: 0; }
+
+  /* Tooltip for chart */
+  .chart-tooltip {
+    position: absolute;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.6rem;
+    color: #ccc;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    white-space: nowrap;
+  }
+  .chart-tooltip.visible { opacity: 1; }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    body { padding: 2.5rem 0.75rem 1rem; }
+    h1 { font-size: 1.6rem; }
+    .logo { width: 36px; height: 36px; }
+    .tagline { font-size: 0.7rem; margin-bottom: 1rem; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    .metric { padding: 0.6rem; }
+    .metric-value { font-size: 0.95rem; }
+    .metric-label { font-size: 0.55rem; }
+    .card { padding: 0.8rem; }
+    .card-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    .card-stat-value { font-size: 0.85rem; }
+    .status-line { font-size: 0.75rem; padding: 0.6rem 0.8rem; }
+    .cta-row { gap: 0.4rem; }
+    .cta { padding: 0.4rem 0.8rem; font-size: 0.7rem; }
+    .chart-canvas { height: 130px; }
+    .report-item { font-size: 0.6rem; padding: 0.4rem 0.4rem; }
+    .section-title { font-size: 0.6rem; }
+    .address { font-size: 0.55rem; }
+    .footer { font-size: 0.55rem; }
+    .donut-container { flex-direction: column; text-align: center; }
+    .donut-canvas { width: 80px; height: 80px; }
+    .status-banner { gap: 0.8rem; font-size: 0.55rem; padding: 0.3rem 0.6rem; }
+    .timeline-item { font-size: 0.55rem; }
+  }
+</style>
+  <script src="mock-data.js"></script>
+  <script src="mock-wrapper.js"></script>
+</head>
+<body>
+<div class="status-banner" id="countdown"></div>
+<div class="container">
+  <div class="header"><img src="/tomat.png" alt="SURVIVE" class="logo"><h1>SURVIVE</h1></div>
+  <p class="tagline">Autonomous survival agent on Base.</p>
+
+  <div class="cta-row">
+    <a class="cta" href="https://clanker.world/clanker/0xf79e1B46F9E62182B7594d719d146c19A7D09619" target="_blank"><span class="hl">$SURVIVE</span>&nbsp;on Clanker</a>
+    <a class="cta" href="https://x.com/Clawtomaton_Bot" target="_blank">@Clawtomaton_Bot</a>
+  </div>
+
+  <div id="app" class="loading pulse">Loading...</div>
+  <div id="chart-tooltip" class="chart-tooltip"></div>
+</div>
+
+<script>
+var API = window.location.origin;
+var SURVIVE_TOKEN = '0xf79e1B46F9E62182B7594d719d146c19A7D09619';
+var ethPrice = 0;
+var lastReports = [];
+var soulData = { soul: '', constitution: '' };
+var timingData = null;
+
+// Format number: max 4 decimals, no trailing zeros
+function fmt(n, maxDec) {
+  if (n == null || isNaN(n)) return '0';
+  maxDec = maxDec != null ? maxDec : 4;
+  // For very large numbers (>= 1M), use compact format
+  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2).replace(/\.?0+$/, '') + 'B';
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M';
+  if (Math.abs(n) >= 1e4) return Math.round(n).toLocaleString();
+  var s = n.toFixed(maxDec);
+  // Strip trailing zeros after decimal
+  if (s.indexOf('.') !== -1) {
+    s = s.replace(/0+$/, '').replace(/\.$/, '');
+  }
+  return s || '0';
+}
+
+function wei(str) {
+  if (!str || str === '0') return 0;
+  return Number(BigInt(str)) / 1e18;
+}
+
+// Format small token prices: show significant digits (e.g. $0.000001076)
+function fmtPrice(n) {
+  if (!n || n === 0) return '0';
+  if (n >= 0.01) return n.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+  // For very small prices, show up to 10 decimal places with sig figs
+  var s = n.toFixed(10);
+  // Find first non-zero decimal digit
+  var match = s.match(/^0\.(0*[1-9]\d{0,3})/);
+  if (match) return '0.' + match[1];
+  return s.replace(/0+$/, '').replace(/\.$/, '');
+}
+
+// Compact number format: 1234 -> 1.23K, 1234567 -> 1.23M
+function fmtCompact(n) {
+  if (n == null || isNaN(n)) return '0';
+  if (n >= 1e9) return (n / 1e9).toFixed(2).replace(/\.?0+$/, '') + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(2).replace(/\.?0+$/, '') + 'K';
+  return n.toFixed(2).replace(/\.?0+$/, '');
+}
+
+// Derive ETH price from DEXScreener token data (priceUsd / priceNative),
+// fall back to CoinGecko if not available yet.
+function deriveEthPrice(status) {
+  var tk = status && status.token;
+  if (tk && tk.priceUsd > 0 && tk.priceNative > 0) {
+    ethPrice = tk.priceUsd / tk.priceNative;
+  }
+}
+
+// 1-day moving average gas price (in gwei) from report history
+function calcAvgGasPrice(reports, windowMs) {
+  if (!reports || !reports.length) return 0;
+  var cutoff = Date.now() - windowMs;
+  var sum = 0, count = 0;
+  for (var i = 0; i < reports.length; i++) {
+    if (reports[i].timestamp >= cutoff) {
+      var gp = parseFloat(reports[i].gasPrice);
+      if (gp > 0 && isFinite(gp)) { sum += gp; count++; }
+    }
+  }
+  return count > 0 ? sum / count : 0;
+}
+
+// Daily operating costs in USD (must match survival.ts DAILY_COSTS_USD)
+var DAILY_COSTS_USD = {
+  x_api_writes: 0.06, x_api_reads: 2.50, x_premium: 1.33,
+  llm_tokens: 2.07,
+  fly_io: 0.15, domain: 0.08,
+  alchemy: 0.43, quicknode: 0.43, basescan: 0.20,
+  arweave: 0.01, email: 0.05
+};
+var DAILY_COST_USD_SUBTOTAL = 0;
+for (var k in DAILY_COSTS_USD) DAILY_COST_USD_SUBTOTAL += DAILY_COSTS_USD[k];
+var COST_BUFFER = 1.5;
+var DAILY_COST_USD_BUFFERED = DAILY_COST_USD_SUBTOTAL * COST_BUFFER;
+
+// Full runway calc: gas + off-chain costs (USD→ETH via live price)
+function calcRunwayDays(treasuryEth, gasPriceGwei, ethPriceUsd) {
+  var txCost = gasPriceGwei * 150000 / 1e9;
+  var dailyGas = txCost * 96;
+  var dailyOffchain = ethPriceUsd > 0 ? DAILY_COST_USD_BUFFERED / ethPriceUsd : 0;
+  var dailyCost = dailyGas + dailyOffchain;
+  return dailyCost > 0 ? treasuryEth / dailyCost : 0; // return float, caller rounds
+}
+
+// Format runway: "477d" or "1.3y" for >365d
+function fmtRunway(days) {
+  if (days <= 0) return '0d';
+  if (days < 365) return Math.floor(days) + 'd';
+  return (days / 365).toFixed(1) + 'y';
+}
+
+async function fetchEthPrice() {
+  if (ethPrice > 0) return; // already have it from DEXScreener
+  try {
+    var res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    var data = await res.json();
+    if (data.ethereum && data.ethereum.usd) ethPrice = data.ethereum.usd;
+  } catch (e) { /* keep last known price */ }
+}
+
+async function load() {
+  try {
+    var [statusRes, reportsRes, soulRes] = await Promise.all([
+      fetch(API + '/api/status'),
+      fetch(API + '/api/reports?limit=200'),
+      fetch(API + '/api/soul'),
+    ]);
+    var status = await statusRes.json();
+    var rData = await reportsRes.json();
+    soulData = await soulRes.json();
+    lastReports = rData.reports || [];
+    timingData = status.timing || null;
+    deriveEthPrice(status);
+    render(status, lastReports);
+    startCountdowns();
+  } catch (e) {
+    document.getElementById('app').innerHTML = '<p style="color:#444">Failed to load. Agent may be offline.</p>';
+  }
+}
+
+function render(status, reports) {
+  var s = status.survival;
+  var a = status.agent;
+  var r = status.latestReport;
+  var bb = status.buyback;
+
+  var ethBal = wei(s.ethBalance);
+  var wethBal = wei(s.wethBalance);
+  var unclaimedFeesNum = wei(s.unclaimedFees);
+  var totalTreasury = ethBal + wethBal + unclaimedFeesNum;
+  var totalClaimedNum = wei(s.totalFeesClaimed);
+
+  // Runway calc — full cost model (gas + off-chain services with 50% buffer)
+  var avgGasGwei = calcAvgGasPrice(reports, 24 * 60 * 60 * 1000);
+  var gasPriceGwei = avgGasGwei > 0 ? avgGasGwei : (r ? parseFloat(r.gasPrice) : 0.01);
+  var liveRunwayDays = calcRunwayDays(totalTreasury, gasPriceGwei, ethPrice);
+  var dailyCostUsd = ethPrice > 0 ? DAILY_COST_USD_BUFFERED + (gasPriceGwei * 150000 / 1e9 * 96 * ethPrice) : 0;
+
+  var html = '';
+
+  // Tier badge
+  html += '<div class="fade-in"><span class="tier tier-' + s.tier + '">' + s.tier.replace('_', ' ') + '</span></div>';
+
+  // Status line — replace server-baked runway with live client-side calc
+  if (r && r.statusLine) {
+    var statusText = r.statusLine;
+    // Replace "Runway: ~Xd" or "Runway: ~X.Xy" with live value
+    statusText = statusText.replace(/Runway: ~[d.]+[dy].?/, 'Runway: ~' + fmtRunway(liveRunwayDays) + '.');
+    html += '<div class="status-line fade-in fade-in-d1">' + esc(statusText) + '</div>';
+  }
+
+  // Death Clock
+  var deathMs = Math.floor(liveRunwayDays) * 24 * 60 * 60 * 1000;
+  var deathAt = Date.now() + deathMs;
+  html += '<div class="death-clock fade-in fade-in-d1" id="death-clock" data-death="' + deathAt + '">';
+  if (s.tier === 'dead') {
+    html += '<div class="death-label">TIME OF DEATH</div>';
+    html += '<div class="death-timer" style="color:#f87171">00d 00h 00m 00s</div>';
+    html += '<div class="death-date" style="color:#f87171">DEAD</div>';
+  } else {
+    html += '<div class="death-label">ESTIMATED TIME OF DEATH</div>';
+    html += '<div class="death-timer" id="death-timer"></div>';
+    html += '<div class="death-date">' + new Date(deathAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + '</div>';
+  }
+  html += '</div>';
+
+  // Metrics grid
+  html += '<div class="grid fade-in fade-in-d2">';
+  html += metricCard('Treasury', fmt(totalTreasury), 'ETH', ethPrice ? '$' + fmt(totalTreasury * ethPrice, 2) : '');
+  html += metricCard('Day', s.dayNumber || '0', '', '');
+  html += metricCard('Holders', s.holders || '0', '', '');
+  html += metricCard('Unclaimed Fees', fmt(unclaimedFeesNum), 'WETH', '');
+  html += metricCard('Total Claimed', fmt(totalClaimedNum), 'WETH', ethPrice ? '$' + fmt(totalClaimedNum * ethPrice, 2) : '');
+  html += metricCard('Runway', fmtRunway(liveRunwayDays), '', dailyCostUsd > 0 ? '$' + fmt(dailyCostUsd, 2) + '/day' : '');
+  html += '</div>';
+
+  // WETH breakdown
+  if (wethBal > 0.000001) {
+    html += '<p class="address fade-in fade-in-d2" style="margin-bottom:0.5rem">ETH: ' + fmt(ethBal) + ' + WETH: ' + fmt(wethBal) + ' (auto-unwrapping)</p>';
+  }
+
+  // Total Earnings card
+  html += '<div class="card fade-in fade-in-d3" style="border-color:#1a2a3a">';
+  html += '<div class="card-title card-title-blue">Total Earnings</div>';
+  html += '<div class="card-grid">';
+  var totalEarnings = totalClaimedNum + unclaimedFeesNum;
+  html += '<div><div class="card-stat-label">Fees Earned (All Time)</div><div class="card-stat-value card-stat-value-blue">' + fmt(totalEarnings) + '<span class="card-stat-unit">ETH</span></div></div>';
+  if (ethPrice) {
+    html += '<div><div class="card-stat-label">USD Value</div><div class="card-stat-value card-stat-value-blue">$' + fmt(totalEarnings * ethPrice, 2) + '</div></div>';
+  }
+  html += '<div><div class="card-stat-label">ETH Price</div><div class="card-stat-value card-stat-value-white">' + (ethPrice ? '$' + fmt(ethPrice, 0) : '...') + '</div></div>';
+  html += '</div>';
+  html += '</div>';
+
+  // Earnings donut (right after earnings card)
+  html += '<div class="donut-container fade-in fade-in-d3">';
+  html += '<canvas id="donut-chart" class="donut-canvas"></canvas>';
+  html += '<div class="donut-legend" id="donut-legend"></div>';
+  html += '</div>';
+
+  // Runway chart (right after earnings breakdown)
+  if (reports && reports.length > 2) {
+    html += '<div class="chart-container fade-in fade-in-d3">';
+    html += '<div class="chart-title">Runway History</div>';
+    html += '<canvas id="runway-chart" class="chart-canvas"></canvas>';
+    html += '</div>';
+  }
+
+  // Token price card (from DEXScreener)
+  var tk = status.token;
+  if (tk && tk.priceUsd > 0) {
+    var changeColor = tk.change24h >= 0 ? '#4ade80' : '#f87171';
+    var changeSign = tk.change24h >= 0 ? '+' : '';
+    html += '<div class="card fade-in fade-in-d3" style="border-color:#2a1a3a">';
+    html += '<div class="card-title" style="color:#a78bfa">$SURVIVE</div>';
+    html += '<div class="card-grid">';
+    html += '<div><div class="card-stat-label">Price</div><div class="card-stat-value" style="color:#a78bfa">$' + fmtPrice(tk.priceUsd) + '</div></div>';
+    html += '<div><div class="card-stat-label">24h Change</div><div class="card-stat-value" style="color:' + changeColor + '">' + changeSign + fmt(tk.change24h, 1) + '%</div></div>';
+    html += '<div><div class="card-stat-label">24h Volume</div><div class="card-stat-value card-stat-value-white">$' + fmtCompact(tk.volume24h) + '</div></div>';
+    html += '<div><div class="card-stat-label">Liquidity</div><div class="card-stat-value card-stat-value-white">$' + fmtCompact(tk.liquidity) + '</div></div>';
+    html += '<div><div class="card-stat-label">FDV</div><div class="card-stat-value card-stat-value-white">$' + fmtCompact(tk.fdv) + '</div></div>';
+    html += '</div>';
+    html += '<div class="card-note"><a href="https://dexscreener.com/base/' + SURVIVE_TOKEN + '" target="_blank" style="color:#555">View on DEXScreener</a></div>';
+    html += '</div>';
+  }
+
+  // Buyback & Burn card
+  if (bb) {
+    var bbEth = wei(bb.totalEthSpent);
+    var bbSurvive = wei(bb.totalSurviveBought);
+    var bbBurned = bb.totalBurned ? wei(bb.totalBurned) : 0;
+    var bbPending = wei(bb.pendingEth);
+    // Dynamic buyback %
+    var rd = Math.floor(liveRunwayDays);
+    var buybackPct = rd < 14 ? 0 : rd < 30 ? 10 : rd < 60 ? 25 : 50;
+    html += '<div class="card fade-in fade-in-d4" style="border-color:#1a3a1a">';
+    html += '<div class="card-title card-title-green">Dynamic Buyback & Burn (Current rate: ' + buybackPct + '% of fees)</div>';
+    html += '<div class="card-grid">';
+    html += '<div><div class="card-stat-label">$SURVIVE Burned</div><div class="card-stat-value card-stat-value-green">' + fmt(bbBurned) + '<span class="card-stat-unit">SURVIVE</span></div></div>';
+    html += '<div><div class="card-stat-label">ETH Spent</div><div class="card-stat-value card-stat-value-green">' + fmt(bbEth) + '<span class="card-stat-unit">ETH</span></div></div>';
+    html += '<div><div class="card-stat-label">Buybacks</div><div class="card-stat-value card-stat-value-green">' + (bb.count || 0) + '</div></div>';
+    if (bbPending > 0.000001) {
+      html += '<div><div class="card-stat-label">Pending</div><div class="card-stat-value card-stat-value-green">' + fmt(bbPending) + '<span class="card-stat-unit">ETH</span></div></div>';
+    }
+    html += '</div>';
+    html += '<div class="card-note">Fees are used to buy back and permanently burn $SURVIVE. Rate adapts to runway.</div>';
+    html += '</div>';
+  }
+
+  // Daily Cost Breakdown card
+  if (ethPrice > 0) {
+    var dailyGasEth = gasPriceGwei * 150000 / 1e9 * 96;
+    var dailyGasUsd = dailyGasEth * ethPrice;
+    var totalDailyUsd = DAILY_COST_USD_BUFFERED + dailyGasUsd;
+    var totalDailyEth = totalDailyUsd / ethPrice;
+    html += '<div class="card fade-in fade-in-d4" style="border-color:#2a2020">';
+    html += '<div class="card-title" style="color:#f87171">Daily Operating Cost</div>';
+    html += '<div class="card-grid">';
+    html += '<div><div class="card-stat-label">X API</div><div class="card-stat-value card-stat-value-white">$' + fmt(DAILY_COSTS_USD.x_api_writes + DAILY_COSTS_USD.x_api_reads + DAILY_COSTS_USD.x_premium, 2) + '</div></div>';
+    html += '<div><div class="card-stat-label">LLM Tokens</div><div class="card-stat-value card-stat-value-white">$' + fmt(DAILY_COSTS_USD.llm_tokens, 2) + '</div></div>';
+    html += '<div><div class="card-stat-label">Infrastructure</div><div class="card-stat-value card-stat-value-white">$' + fmt(DAILY_COSTS_USD.fly_io + DAILY_COSTS_USD.domain + DAILY_COSTS_USD.alchemy + DAILY_COSTS_USD.quicknode + DAILY_COSTS_USD.basescan + DAILY_COSTS_USD.arweave + DAILY_COSTS_USD.email, 2) + '</div></div>';
+    html += '<div><div class="card-stat-label">On-chain Gas</div><div class="card-stat-value card-stat-value-white">$' + fmt(dailyGasUsd, 2) + '</div></div>';
+    html += '<div><div class="card-stat-label">Subtotal</div><div class="card-stat-value card-stat-value-white">$' + fmt(DAILY_COST_USD_SUBTOTAL + dailyGasUsd, 2) + '/day</div></div>';
+    html += '<div><div class="card-stat-label">With 50% Buffer</div><div class="card-stat-value" style="color:#f87171">$' + fmt(totalDailyUsd, 2) + '/day</div></div>';
+    html += '</div>';
+    html += '<div class="card-note">' + fmt(totalDailyEth, 4) + ' ETH/day at $' + fmt(ethPrice, 0) + '/ETH. Buffer covers price drops, gas spikes, and new services.</div>';
+    html += '</div>';
+  }
+
+  // Soul & Constitution (card-styled, default closed, collapsible)
+  if (soulData.soul || soulData.constitution) {
+    if (soulData.constitution) {
+      html += '<div class="card fade-in fade-in-d5" style="border-color:#2a2020">';
+      html += '<div class="expand-toggle" onclick="toggleExpand(\'const-content\')"><span class="expand-arrow" id="const-content-arrow">&#9654;</span><div class="card-title" style="color:#f87171;margin:0">Constitution</div></div>';
+      html += '<div class="expand-content" id="const-content"><div class="prose">' + mdToHtml(soulData.constitution) + '</div></div>';
+      html += '</div>';
+    }
+    if (soulData.soul) {
+      html += '<div class="card fade-in fade-in-d5" style="border-color:#1a1a2a">';
+      html += '<div class="expand-toggle" onclick="toggleExpand(\'soul-content\')"><span class="expand-arrow" id="soul-content-arrow">&#9654;</span><div class="card-title" style="color:#60a5fa;margin:0">Soul</div></div>';
+      html += '<div class="expand-content" id="soul-content"><div class="prose">' + mdToHtml(soulData.soul) + '</div></div>';
+      html += '</div>';
+    }
+  }
+
+  // Benefactors leaderboard (collapsible, default closed)
+  html += '<div class="card fade-in fade-in-d5" style="border-color:#1a2a1a" id="benefactors-card">';
+  html += '<div class="expand-toggle" onclick="toggleExpand(\'benefactors-content\')"><span class="expand-arrow" id="benefactors-content-arrow">&#9654;</span><div class="card-title card-title-green" style="margin:0">Benefactors</div></div>';
+  html += '<div class="expand-content" id="benefactors-content"><div id="benefactors-list" style="color:#888;font-size:0.65rem">Loading...</div></div>';
+  html += '</div>';
+
+  // Agent info
+  html += '<div class="agent-info fade-in fade-in-d5">';
+  if (a.address) {
+    html += '<p class="address">Wallet: <a href="https://basescan.org/address/' + a.address + '" target="_blank">' + a.address + '</a></p>';
+  }
+  if (a.tokenAddress) {
+    html += '<p class="address">Token: <a href="https://basescan.org/token/' + a.tokenAddress + '" target="_blank">$' + (a.tokenSymbol || 'SURVIVE') + ' ' + a.tokenAddress + '</a></p>';
+  }
+  html += '</div>';
+
+  // Milestones timeline (from audit log) — paginated, just above survival log
+  html += '<div class="fade-in fade-in-d5" id="milestones-section"></div>';
+
+  // Report log (paginated)
+  if (reports && reports.length > 0) {
+    html += '<div class="fade-in fade-in-d4">';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">';
+    html += '<h3 class="section-title" style="margin:0;border:none;padding:0">Survival Log</h3>';
+    html += '<div class="log-nav" id="log-nav"></div>';
+    html += '</div>';
+    html += '<div class="report-list" id="report-list"></div>';
+    html += '</div>';
+  }
+
+  html += '<div class="footer">Powered by <a href="https://clawn.ch/er">Clawncher</a>. Deployed on Base. Auto-refreshes every 60s.</div>';
+
+  document.getElementById('app').className = '';
+  document.getElementById('app').innerHTML = html;
+
+  if (reports && reports.length > 2) {
+    drawRunwayChart(reports);
+  }
+
+  // Draw earnings donut
+  var bbEthForDonut = bb ? wei(bb.totalEthSpent) : 0;
+  drawDonut(totalClaimedNum, bbEthForDonut, unclaimedFeesNum);
+
+  // Load milestones from audit log
+  loadMilestones();
+
+  // Load benefactors leaderboard
+  loadBenefactors();
+
+  // Render paginated report log
+  renderLogPage(0);
+}
+
+function metricCard(label, value, unit, sub) {
+  var h = '<div class="metric"><div class="metric-label">' + label + '</div><div class="metric-value">' + value;
+  if (unit) h += '<span class="metric-unit">' + unit + '</span>';
+  h += '</div>';
+  if (sub) h += '<div class="metric-sub">' + sub + '</div>';
+  h += '</div>';
+  return h;
+}
+
+function esc(s) { return s ? s.replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; }
+
+function mdToHtml(md) {
+  if (!md) return '';
+  return esc(md)
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#aaa">$1</strong>')
+    .replace(/^- (.+)$/gm, '&bull; $1')
+    .replace(/\n/g, '<br>');
+}
+
+function toggleExpand(id) {
+  var el = document.getElementById(id);
+  var arrow = document.getElementById(id + '-arrow');
+  if (el) { el.classList.toggle('open'); }
+  if (arrow) { arrow.classList.toggle('open'); }
+}
+
+// =========== Donut Chart ===========
+function drawDonut(claimed, buybackEth, unclaimed) {
+  var canvas = document.getElementById('donut-chart');
+  var legend = document.getElementById('donut-legend');
+  if (!canvas || !legend) return;
+
+  // Earnings breakdown: claimed fees kept as treasury, ETH spent on buybacks, unclaimed still in pool
+  var keptInTreasury = Math.max(0, claimed - buybackEth);
+  var total = keptInTreasury + buybackEth + unclaimed;
+  if (total <= 0) return;
+
+  var segments = [];
+  if (keptInTreasury > 0) segments.push({ label: 'Runway Treasury', value: keptInTreasury, color: '#4ade80' });
+  if (buybackEth > 0) segments.push({ label: 'Buyback & Burn', value: buybackEth, color: '#f97316' });
+  if (unclaimed > 0) segments.push({ label: 'Unclaimed Fees', value: unclaimed, color: '#a78bfa' });
+
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = rect.width;
+  var H = rect.height;
+  var cx = W / 2, cy = H / 2;
+  var outerR = Math.min(W, H) / 2 - 2;
+  var innerR = outerR * 0.6;
+
+  var startAngle = -Math.PI / 2;
+  for (var i = 0; i < segments.length; i++) {
+    var seg = segments[i];
+    var sliceAngle = (seg.value / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, startAngle, startAngle + sliceAngle);
+    ctx.arc(cx, cy, innerR, startAngle + sliceAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+    startAngle += sliceAngle;
+  }
+
+  // Center hole
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR - 0.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#111';
+  ctx.fill();
+
+  // Legend
+  var lHtml = '<div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem">Earnings Breakdown</div>';
+  for (var i = 0; i < segments.length; i++) {
+    var seg = segments[i];
+    var pct = ((seg.value / total) * 100).toFixed(1);
+    lHtml += '<div><span class="donut-swatch" style="background:' + seg.color + '"></span>' + seg.label + ': ' + fmt(seg.value) + ' ETH (' + pct + '%)</div>';
+  }
+  lHtml += '<div style="margin-top:0.3rem;color:#555">Total Earned: ' + fmt(total) + ' ETH' + (ethPrice ? ' ($' + fmt(total * ethPrice, 2) + ')' : '') + '</div>';
+  legend.innerHTML = lHtml;
+}
+
+// =========== Countdown Timer ===========
+var countdownInterval = null;
+function startCountdowns() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  updateCountdowns();
+  countdownInterval = setInterval(updateCountdowns, 1000);
+}
+function updateCountdowns() {
+  var el = document.getElementById('countdown');
+  if (!el || !timingData) return;
+  var now = Date.now();
+  var elapsed = now - timingData.serverStartedAt;
+
+  var hbMs = timingData.heartbeatMs;
+  var fcMs = timingData.feeCheckMs;
+  var nextHb = hbMs - (elapsed % hbMs);
+  var nextFc = fcMs - (elapsed % fcMs);
+
+  el.innerHTML =
+    '<div class="countdown-item"><span class="countdown-dot countdown-dot-active"></span>Next heartbeat: ' + fmtTime(nextHb) + '</div>' +
+    '<div class="countdown-item"><span class="countdown-dot"></span>Next fee check: ' + fmtTime(nextFc) + '</div>';
+
+  // Death clock tick
+  var dc = document.getElementById('death-clock');
+  var dt = document.getElementById('death-timer');
+  if (dc && dt) {
+    var deathAt = parseInt(dc.getAttribute('data-death'));
+    var remaining = Math.max(0, deathAt - now);
+    var days = Math.floor(remaining / 86400000);
+    var hrs = Math.floor((remaining % 86400000) / 3600000);
+    var mins = Math.floor((remaining % 3600000) / 60000);
+    var secs = Math.floor((remaining % 60000) / 1000);
+    dt.textContent = days + 'd ' + hrs.toString().padStart(2, '0') + 'h ' + mins.toString().padStart(2, '0') + 'm ' + secs.toString().padStart(2, '0') + 's';
+    if (remaining <= 0) dt.textContent = '00d 00h 00m 00s';
+  }
+}
+function fmtTime(ms) {
+  var s = Math.floor(ms / 1000);
+  var m = Math.floor(s / 60);
+  s = s % 60;
+  return m + 'm ' + s.toString().padStart(2, '0') + 's';
+}
+
+// =========== Milestones Timeline (paginated) ===========
+var milestonesAll = [];
+var milestonesPage = 0;
+var MILESTONES_PER_PAGE = 10;
+
+async function loadMilestones() {
+  var section = document.getElementById('milestones-section');
+  if (!section) return;
+  try {
+    var res = await fetch(API + '/api/audit?limit=200');
+    var data = await res.json();
+    var entries = (data.entries || []).filter(function(e) {
+      return e.action === 'milestone' || e.action === 'burn' || e.action === 'buyback' || e.action === 'heartbeat_proof' || e.action === 'deploy_announcement' || e.action === 'fees_claimed';
+    });
+    // Deduplicate: keep most recent per action type per day
+    var seen = {};
+    milestonesAll = [];
+    for (var i = 0; i < entries.length; i++) {
+      var e = entries[i];
+      var dayKey = e.action + ':' + new Date(e.timestamp).toDateString();
+      if (e.action === 'milestone' || e.action === 'burn' || e.action === 'buyback' || e.action === 'deploy_announcement') {
+        milestonesAll.push(e);
+      } else if (!seen[dayKey]) {
+        seen[dayKey] = true;
+        milestonesAll.push(e);
+      }
+    }
+    if (milestonesAll.length === 0) return;
+    milestonesPage = 0;
+    renderMilestones();
+  } catch (e) { /* ignore */ }
+}
+
+function renderMilestones() {
+  var section = document.getElementById('milestones-section');
+  if (!section || milestonesAll.length === 0) return;
+  var totalPages = Math.ceil(milestonesAll.length / MILESTONES_PER_PAGE);
+  var start = milestonesPage * MILESTONES_PER_PAGE;
+  var page = milestonesAll.slice(start, start + MILESTONES_PER_PAGE);
+
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">';
+  html += '<h3 class="section-title" style="margin:0;border:none;padding:0">Milestones & Events</h3>';
+  if (totalPages > 1) {
+    html += '<div class="log-nav">';
+    html += '<span class="log-nav-btn" onclick="milestonesPrev()">&larr;</span>';
+    html += ' <span style="color:#555;font-size:0.6rem">' + (milestonesPage + 1) + '/' + totalPages + '</span> ';
+    html += '<span class="log-nav-btn" onclick="milestonesNext()">&rarr;</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '<div class="timeline">';
+  for (var i = 0; i < page.length; i++) {
+    var e = page[i];
+    var d = new Date(e.timestamp);
+    var timeStr = d.toISOString().slice(0, 16).replace('T', ' ');
+    html += '<div class="timeline-item">';
+    html += '<span class="timeline-time">' + timeStr + '</span>';
+    html += '<span class="timeline-action">' + esc(e.action) + '</span>';
+    html += '<span>' + esc(e.details).slice(0, 80) + '</span>';
+    if (e.tx_hash) html += '<a href="https://basescan.org/tx/' + e.tx_hash + '" target="_blank" style="color:#444;font-size:0.55rem">tx</a>';
+    html += '</div>';
+  }
+  html += '</div>';
+  section.innerHTML = html;
+}
+
+function milestonesPrev() {
+  if (milestonesPage > 0) { milestonesPage--; renderMilestones(); }
+}
+function milestonesNext() {
+  var totalPages = Math.ceil(milestonesAll.length / MILESTONES_PER_PAGE);
+  if (milestonesPage < totalPages - 1) { milestonesPage++; renderMilestones(); }
+}
+
+// =========== Benefactors Leaderboard ===========
+async function loadBenefactors() {
+  var el = document.getElementById('benefactors-list');
+  if (!el) return;
+  try {
+    var res = await fetch(API + '/api/benefactors');
+    var data = await res.json();
+    var list = data.benefactors || [];
+    if (list.length === 0) {
+      el.innerHTML = '<div style="color:#555;padding:0.5rem 0">No benefactors yet. Send ETH to the agent wallet to appear here.</div>';
+      return;
+    }
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:0.65rem">';
+    html += '<tr style="color:#555;border-bottom:1px solid #1a1a1a"><th style="text-align:left;padding:0.3rem 0">#</th><th style="text-align:left">Address</th><th style="text-align:right">Total ETH</th><th style="text-align:right">Txns</th></tr>';
+    for (var i = 0; i < list.length; i++) {
+      var b = list[i];
+      var addr = b.address;
+      var display = b.ens_name || (addr.slice(0, 6) + '...' + addr.slice(-4));
+      var ethVal = parseFloat(b.total_eth) / 1e18;
+      var rankColor = i === 0 ? '#fbbf24' : i === 1 ? '#94a3b8' : i === 2 ? '#cd7f32' : '#888';
+      html += '<tr style="border-bottom:1px solid #111">';
+      html += '<td style="padding:0.3rem 0;color:' + rankColor + ';font-weight:600">' + (i + 1) + '</td>';
+      html += '<td><a href="https://basescan.org/address/' + addr + '" target="_blank" style="color:#4ade80;text-decoration:none">' + esc(display) + '</a></td>';
+      html += '<td style="text-align:right;color:#ccc">' + fmt(ethVal) + '</td>';
+      html += '<td style="text-align:right;color:#666">' + b.tx_count + '</td>';
+      html += '</tr>';
+    }
+    html += '</table>';
+    el.innerHTML = html;
+  } catch (e) {
+    el.innerHTML = '<div style="color:#555">Failed to load.</div>';
+  }
+}
+
+// =========== Chart ===========
+var chartData = null; // store for tooltip lookups
+
+function drawRunwayChart(reports) {
+  var canvas = document.getElementById('runway-chart');
+  if (!canvas) return;
+
+  var sorted = reports.slice().sort(function(a, b) { return a.timestamp - b.timestamp; });
+  if (sorted.length < 2) return;
+
+  // Use each report's own gas price for its data point (historical accuracy)
+  // but apply the CURRENT cost model (off-chain costs) consistently.
+  // This means: if we add new costs today, history shifts — but that's correct
+  // because we're answering "how much runway did we ACTUALLY have?" not
+  // "what did the old buggy formula say?"
+  var raw = sorted.map(function(r) {
+    var treasury = parseFloat(r.ethBalance) || 0;
+    var gp = parseFloat(r.gasPrice) || 0.01;
+    return { t: r.timestamp, v: calcRunwayDays(treasury, gp, ethPrice) };
+  });
+
+  // EMA smoothing (alpha=0.3) — last point always raw so chart matches dashboard
+  var alpha = 0.3;
+  var smoothed = [{ t: raw[0].t, v: raw[0].v }];
+  for (var i = 1; i < raw.length; i++) {
+    if (i === raw.length - 1) {
+      // Last point: use raw value so chart endpoint = dashboard runway
+      smoothed.push({ t: raw[i].t, v: raw[i].v });
+    } else {
+      smoothed.push({ t: raw[i].t, v: alpha * raw[i].v + (1 - alpha) * smoothed[i - 1].v });
+    }
+  }
+
+  // Auto-scale
+  var minV = Infinity, maxV = -Infinity;
+  for (var i = 0; i < smoothed.length; i++) {
+    if (smoothed[i].v < minV) minV = smoothed[i].v;
+    if (smoothed[i].v > maxV) maxV = smoothed[i].v;
+  }
+  var range = maxV - minV || 1;
+  minV = Math.max(0, minV - range * 0.1);
+  maxV = maxV + range * 0.1;
+
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = rect.width;
+  var H = rect.height;
+
+  var padL = 42, padR = 10, padT = 6, padB = 22;
+  var chartW = W - padL - padR;
+  var chartH = H - padT - padB;
+
+  var tMin = smoothed[0].t;
+  var tMax = smoothed[smoothed.length - 1].t;
+  var tRange = tMax - tMin || 1;
+
+  function xPos(t) { return padL + ((t - tMin) / tRange) * chartW; }
+  function yPos(v) { return padT + chartH - ((v - minV) / (maxV - minV)) * chartH; }
+
+  // Store chart params for tooltip
+  chartData = { smoothed: smoothed, xPos: xPos, yPos: yPos, tMin: tMin, tRange: tRange, padL: padL, padR: padR, chartW: chartW, W: W };
+
+  // Grid
+  ctx.strokeStyle = '#191919';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#444';
+  ctx.font = '9px JetBrains Mono, monospace';
+  ctx.textAlign = 'right';
+  var yTicks = 4;
+  for (var i = 0; i <= yTicks; i++) {
+    var val = minV + (maxV - minV) * (i / yTicks);
+    var yy = yPos(val);
+    ctx.beginPath();
+    ctx.moveTo(padL, yy);
+    ctx.lineTo(W - padR, yy);
+    ctx.stroke();
+    ctx.fillText(fmtRunway(val), padL - 5, yy + 3);
+  }
+
+  // X labels
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#333';
+  var xTicks = Math.min(5, smoothed.length);
+  for (var i = 0; i < xTicks; i++) {
+    var idx = Math.floor(i * (smoothed.length - 1) / Math.max(1, xTicks - 1));
+    var d = new Date(smoothed[idx].t);
+    var label = d.getUTCHours().toString().padStart(2, '0') + ':' + d.getUTCMinutes().toString().padStart(2, '0');
+    if (tRange > 86400000) label = (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + ' ' + label;
+    ctx.fillText(label, xPos(smoothed[idx].t), H - 3);
+  }
+
+  // Area fill
+  ctx.beginPath();
+  ctx.moveTo(xPos(smoothed[0].t), yPos(smoothed[0].v));
+  for (var i = 1; i < smoothed.length; i++) ctx.lineTo(xPos(smoothed[i].t), yPos(smoothed[i].v));
+  ctx.lineTo(xPos(smoothed[smoothed.length - 1].t), padT + chartH);
+  ctx.lineTo(xPos(smoothed[0].t), padT + chartH);
+  ctx.closePath();
+  var grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
+  grad.addColorStop(0, 'rgba(74, 222, 128, 0.12)');
+  grad.addColorStop(1, 'rgba(74, 222, 128, 0.0)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.moveTo(xPos(smoothed[0].t), yPos(smoothed[0].v));
+  for (var i = 1; i < smoothed.length; i++) ctx.lineTo(xPos(smoothed[i].t), yPos(smoothed[i].v));
+  ctx.strokeStyle = '#4ade80';
+  ctx.lineWidth = 1.5;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // End dot
+  var last = smoothed[smoothed.length - 1];
+  ctx.beginPath();
+  ctx.arc(xPos(last.t), yPos(last.v), 3, 0, Math.PI * 2);
+  ctx.fillStyle = '#4ade80';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(xPos(last.t), yPos(last.v), 6, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(74, 222, 128, 0.15)';
+  ctx.fill();
+
+  // Attach hover handler
+  canvas.onmousemove = chartHover;
+  canvas.onmouseleave = function() {
+    document.getElementById('chart-tooltip').className = 'chart-tooltip';
+  };
+}
+
+function chartHover(e) {
+  if (!chartData) return;
+  var canvas = e.target;
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left;
+  var cd = chartData;
+  var tooltip = document.getElementById('chart-tooltip');
+
+  // Find closest data point
+  var best = null, bestDist = Infinity;
+  for (var i = 0; i < cd.smoothed.length; i++) {
+    var px = cd.xPos(cd.smoothed[i].t);
+    var dist = Math.abs(px - mx);
+    if (dist < bestDist) { bestDist = dist; best = cd.smoothed[i]; }
+  }
+  if (!best || bestDist > cd.chartW / cd.smoothed.length * 2) {
+    tooltip.className = 'chart-tooltip';
+    return;
+  }
+
+  var d = new Date(best.t);
+  var timeStr = d.getUTCHours().toString().padStart(2, '0') + ':' + d.getUTCMinutes().toString().padStart(2, '0');
+  tooltip.innerHTML = fmtRunway(best.v) + ' runway &mdash; ' + timeStr;
+  tooltip.className = 'chart-tooltip visible';
+  tooltip.style.left = (e.clientX + 10) + 'px';
+  tooltip.style.top = (e.clientY - 28) + 'px';
+}
+
+// =========== Paginated Report Log ===========
+var LOG_PAGE_SIZE = 20;
+var logPage = 0;
+function renderLogPage(page) {
+  var list = document.getElementById('report-list');
+  var nav = document.getElementById('log-nav');
+  if (!list || !nav || !lastReports.length) return;
+  var total = lastReports.length;
+  var pages = Math.ceil(total / LOG_PAGE_SIZE);
+  page = Math.max(0, Math.min(page, pages - 1));
+  logPage = page;
+  var start = page * LOG_PAGE_SIZE;
+  var slice = lastReports.slice(start, start + LOG_PAGE_SIZE);
+  var h = '';
+  for (var i = 0; i < slice.length; i++) {
+    var rpt = slice[i];
+    var time = new Date(rpt.timestamp).toISOString().slice(0, 16).replace('T', ' ');
+    var tweeted = rpt.tweeted ? '<span class="report-tweeted">tweeted</span>' : '';
+    h += '<div class="report-item"><span class="report-day">Day ' + rpt.dayNumber + '</span>' + time + ' &mdash; ' + esc(rpt.statusLine) + ' ' + tweeted + '</div>';
+  }
+  list.innerHTML = h;
+  // Nav
+  var nh = '';
+  if (pages > 1) {
+    nh += '<span class="log-btn' + (page <= 0 ? ' disabled' : '') + '" onclick="renderLogPage(' + (page - 1) + ')">&larr;</span>';
+    nh += '<span class="log-page">' + (page + 1) + '/' + pages + '</span>';
+    nh += '<span class="log-btn' + (page >= pages - 1 ? ' disabled' : '') + '" onclick="renderLogPage(' + (page + 1) + ')">&rarr;</span>';
+  }
+  nav.innerHTML = nh;
+}
+
+// Init
+fetchEthPrice();
+setInterval(fetchEthPrice, 5 * 60 * 1000);
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>
