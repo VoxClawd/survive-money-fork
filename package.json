@@ -1,0 +1,19 @@
+{
+  "name": "survive-money-fork",
+  "version": "1.0.0",
+  "description": "Fork of survive.money - Autonomous agent survival dashboard",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "./serve.sh"
+  },
+  "keywords": [
+    "autonomous-agent",
+    "base",
+    "crypto",
+    "survival",
+    "dashboard"
+  ],
+  "author": "Helixy",
+  "license": "MIT"
+}

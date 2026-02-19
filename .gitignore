@@ -1,0 +1,17 @@
+# Config (sensitive data)
+config.js
+
+# Local development
+.DS_Store
+*.log
+node_modules/
+.vercel
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
